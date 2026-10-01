@@ -16,7 +16,8 @@ Game::~Game()
 // We call this once after the game class is instantiated
 bool Game::init()
 {
-
+	bird.setPosition({ 500,500 });
+	text.setString("This is a test font to see if this works");
   return true;
 }
 
@@ -30,6 +31,9 @@ void Game::update(float dt)
 // Runs after update, use it to tell the window what to draw this frame
 void Game::render()
 {
+	window.draw(background); 
+	window.draw(bird);
+	window.draw(text);
 
 }
 
@@ -45,6 +49,7 @@ void Game::mouseButtonPressed(const sf::Event::MouseButtonPressed* event)
 	if (event->button == sf::Mouse::Button::Left)
 	{
 		//Left mouse button was pressed
+		std::cout << position.x << " " << position.y << std::endl;
 	}
 }
 
@@ -79,5 +84,10 @@ void Game::keyReleased(const sf::Event::KeyReleased* event)
 	}
 
 }
+void Game::mouseMoved(const sf::Event::MouseMoved* event)
+{
+	std::cout << event->position.x << " " << event->position.y << std::endl;
+}
+
 
 

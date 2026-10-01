@@ -63,6 +63,10 @@ int main()
         {
             game.mouseButtonReleased(mouseReleased);
         }
+        else if (const sf::Event::MouseMoved* mousemoved = event->getIf<sf::Event::MouseMoved>()) 
+        {
+            game.mouseMoved(mousemoved);
+        }
     }
 
     //'update' element of the game loop
