@@ -23,7 +23,7 @@ bool Game::init()
 	animals[0].loadFromFile("../Data/Images/Critter Crossing/elephant.png");
 	animals[1].loadFromFile("../Data/Images/Critter Crossing/moose.png");
 	animals[2].loadFromFile("../Data/Images/Critter Crossing/penguin.png");
-
+	gs_manager.init();
 	
 	passport_textures[0].loadFromFile("../Data/Images/Critter Crossing/elephant passport.png");
 	passport_textures[1].loadFromFile("../Data/Images/Critter Crossing/moose passport.png");
@@ -132,21 +132,16 @@ void Game::mouseButtonReleased(const sf::Event::MouseButtonReleased* event)
 void Game::keyPressed(const sf::Event::KeyPressed* event)
 {
 	// You can tell which button was pressed by the scancode to SFML's definitions of keyboard keys
-	if (event->scancode == sf::Keyboard::Scancode::W)
-	{
-		// W was pressed
-	}
+	gs_manager.keyPressed(event);
 
 }
 
 // Called by event polling when a KeyReleased event is found
 void Game::keyReleased(const sf::Event::KeyReleased* event)
 {
+
 	// Works the same way as KeyPressed
-	if (event->scancode == sf::Keyboard::Scancode::W)
-	{
-		// W was released
-	}
+	gs_manager.keyReleased(event);
 
 }
 void Game::mouseMoved(const sf::Event::MouseMoved* event)

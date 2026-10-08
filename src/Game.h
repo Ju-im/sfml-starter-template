@@ -6,6 +6,7 @@
 #include "Utility.h"
 #include "Passport.h"
 #include <SFML/Window/Cursor.hpp>
+#include "GameStateManager.h"
 
 class Game
 {
@@ -32,7 +33,7 @@ class Game
   sf::Texture* animals = new sf::Texture[3];
   sf::Texture* passport_textures = new sf::Texture[3];
   sf::Sprite* character;
-
+  GameStateManager gs_manager;
 
   sf::Sprite reject_button{ reject_button_texture };
   sf::Sprite reject_stamp{ reject };
