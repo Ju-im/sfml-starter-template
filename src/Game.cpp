@@ -43,15 +43,15 @@ void Game::update(float dt)
 
 		dragSprite(dragged);
 	}
+	gs_manager.update(dt);
 	
 }
 // for the queue i could make a square greyed out just bobbing up and down
 // Runs after update, use it to tell the window what to draw this frame
 void Game::render()
 {
-	window.draw(background); 
-	window.draw(*character);
-	passport.render(window);
+	gs_manager.render(window);
+	
 	
 
 }
@@ -81,7 +81,7 @@ void Game::mouseButtonPressed(const sf::Event::MouseButtonPressed* event)
 	// Don't need to extract position to a variable like this, this is just to show you it's a Vector2i
 	sf::Vector2i position = event->position;
 	sf::Vector2f mouse_posf = static_cast<sf::Vector2f>(position);
-
+	gs_manager.mouseButtonPressed(event);
 	// You can tell which button was pressed by comparing it to SFML's definitions of mouse buttons
 	if (event->button == sf::Mouse::Button::Left)
 	{
@@ -89,7 +89,7 @@ void Game::mouseButtonPressed(const sf::Event::MouseButtonPressed* event)
 		
 
 		if (clickCheck(mouse_posf, character->getGlobalBounds())) {
-			std::cout << "Clicked";
+			
 			drag_offset = mouse_posf - character->getPosition();
 
 			dragged = character;
@@ -97,7 +97,7 @@ void Game::mouseButtonPressed(const sf::Event::MouseButtonPressed* event)
 		}
 
 		if (clickCheck(mouse_posf, passport.getSprite()->getGlobalBounds())) {
-			std::cout << "Clicked";
+			
 			drag_offset = mouse_posf - passport.getSprite()->getPosition();
 
 			dragged = passport.getSprite();
@@ -111,10 +111,6 @@ bool Game::clickCheck(sf::Vector2f mouse_pos, sf::FloatRect sprite) {
 	
 	return sprite.contains(mouse_pos);
 
-		
-	
-
-	
 }
 
 //Called by event polling when a MouseButtonReleased event is found
@@ -146,22 +142,10 @@ void Game::keyReleased(const sf::Event::KeyReleased* event)
 }
 void Game::mouseMoved(const sf::Event::MouseMoved* event)
 {
-	sf::Vector2i position = event->position;
-	sf::Vector2f mouse_posf = static_cast<sf::Vector2f>(position);
+	gs_manager.mouseMoved(event);
 
 
-	if (clickCheck(mouse_posf, passport.getSprite()->getGlobalBounds())) {
 	
-		const auto cursor = sf::Cursor::createFromSystem(sf::Cursor::Type::Hand).value();
-		window.setMouseCursor(cursor);
-		
-
-	}
-	else {
-		const auto cursor = sf::Cursor::createFromSystem(sf::Cursor::Type::Arrow).value();
-		window.setMouseCursor(cursor);
-
-	}
 	
 }
 

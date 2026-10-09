@@ -14,10 +14,23 @@ bool GameState::init() {
 void GameState::update(float dt) {
 
 	std::cout << "Currently in GameState update" << std::endl;
+	
+
+}
+char GameState::exit()
+{
+	return 'n';
+}
+
+bool GameState::enter() {
+
+	
+	return true;
 
 }
 void GameState::render(sf::RenderWindow& window) {
 	std::cout << "Currently in GameState render" << std::endl;
+	
 
 }
 
@@ -49,4 +62,9 @@ void GameState::keyReleased(const sf::Event::KeyReleased* event) {
 void GameState::mouseMoved(const sf::Event::MouseMoved* event) {
 
 	sf::Vector2i position = event->position;
+}
+
+bool GameState::clickCheck(sf::Vector2f mouse_pos, sf::FloatRect sprite) {
+
+	return sprite.contains(mouse_pos);
 }

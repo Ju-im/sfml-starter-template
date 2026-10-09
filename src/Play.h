@@ -16,5 +16,15 @@ public:
 
 	void render(sf::RenderWindow& window) override;
 	void update(float dt) override;
+	bool enter() override;
 	int count = 0;
+
+	sf::Texture backgroundTexture{ "../Data/Images/WhackaMole Worksheet/background.png" };
+	sf::Texture reject_button_texture{ "../Data/Images/Critter Crossing/reject button.png" };
+	sf::Texture reject{ "../Data/Images/Critter Crossing/reject.png" };
+	sf::Sprite background{ backgroundTexture };
+	sf::RectangleShape fade_rect;
+	float fade_timer = 1.f;
+	bool enter_check = false;
+	bool hand = false;
 };
