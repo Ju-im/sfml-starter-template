@@ -41,7 +41,9 @@ void GameStateManager::render(sf::RenderWindow& window) {
 void GameStateManager::mouseButtonReleased(const sf::Event::MouseButtonReleased* event) {
 	current_state->mouseButtonReleased(event);
 }
-
+void GameStateManager::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
+	current_state->handleEvent(event, window);
+}
 
 void GameStateManager::keyPressed(const sf::Event::KeyPressed* event) {
 	

@@ -34,6 +34,7 @@ int main()
     //'process inputs' element of the game loop
     while (const std::optional event = window.pollEvent())
     {
+        game.handleEvent(*event, window);
         //Close was requested, close the window (e.g. player clicks the window's close button)
         if (event->is<sf::Event::Closed>())
         {
@@ -67,6 +68,7 @@ int main()
         {
             game.mouseMoved(mousemoved);
         }
+       
     }
 
     //'update' element of the game loop

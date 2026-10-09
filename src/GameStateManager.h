@@ -31,5 +31,6 @@ public:
 	void keyPressed(const sf::Event::KeyPressed* event);
 	void keyReleased(const sf::Event::KeyReleased* event);
 	void mouseMoved(const sf::Event::MouseMoved* event);
+	void handleEvent(const sf::Event& event, sf::RenderWindow& window);
 
 };

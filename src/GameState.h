@@ -21,7 +21,7 @@ public:
 	virtual void keyReleased(const sf::Event::KeyReleased* event);
 	virtual void mouseMoved(const sf::Event::MouseMoved* event);
 	virtual bool clickCheck(sf::Vector2f mouse_pos, sf::FloatRect sprite);
-
+	virtual void handleEvent(const sf::Event& event, sf::RenderWindow& window);
 	virtual void render(sf::RenderWindow& window);
 	virtual void update(float dt);
 	virtual char exit();

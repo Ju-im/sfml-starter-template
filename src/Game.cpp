@@ -112,7 +112,9 @@ bool Game::clickCheck(sf::Vector2f mouse_pos, sf::FloatRect sprite) {
 	return sprite.contains(mouse_pos);
 
 }
-
+void Game::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
+	gs_manager.handleEvent(event, window);
+}
 //Called by event polling when a MouseButtonReleased event is found
 void Game::mouseButtonReleased(const sf::Event::MouseButtonReleased* event)
 {

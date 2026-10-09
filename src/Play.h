@@ -13,7 +13,7 @@ public:
 	void keyPressed(const sf::Event::KeyPressed* event) override;
 	void keyReleased(const sf::Event::KeyReleased* event) override;
 	void mouseMoved(const sf::Event::MouseMoved* event) override;
-
+	void handleEvent(const sf::Event& event, sf::RenderWindow& window)override;
 	void render(sf::RenderWindow& window) override;
 	void update(float dt) override;
 	bool enter() override;

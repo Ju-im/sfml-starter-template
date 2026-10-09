@@ -79,6 +79,10 @@ void Play::mouseMoved(const sf::Event::MouseMoved* event) {
 	sf::Vector2i position = event->position;
 }
 
+void Play::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
+	//
+}
+
 bool Play::enter() {
 	fade_rect.setSize({ 1080,720 });
 	fade_rect.setFillColor(sf::Color::Black);

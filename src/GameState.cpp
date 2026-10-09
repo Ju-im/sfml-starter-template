@@ -22,6 +22,7 @@ char GameState::exit()
 	return 'n';
 }
 
+
 bool GameState::enter() {
 
 	
@@ -62,6 +63,10 @@ void GameState::keyReleased(const sf::Event::KeyReleased* event) {
 void GameState::mouseMoved(const sf::Event::MouseMoved* event) {
 
 	sf::Vector2i position = event->position;
+}
+
+void GameState::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
+	//
 }
 
 bool GameState::clickCheck(sf::Vector2f mouse_pos, sf::FloatRect sprite) {

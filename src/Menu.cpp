@@ -72,13 +72,22 @@ char Menu::exit()
 	if (exit_check) {
 		exit_check = false;
 		start_option_clicked = false;
+		rect.setSize({ 0.f,0.f });
+		fade_timer = 1.f;
+		bar_percent = 0.0f;
 		return static_cast<char>(StateCode::Save);
 	}
 	return 'n';
 }
 
 bool Menu::enter() {
+	fade_timer = 1.f;
+	bar_percent = 0.0f;
+	start_option_clicked = false;
+	rect.setSize({ 0.f,0.f });
 
+	exit_check = false;
+	enter_check = true;
 	fade_rect.setSize({ 1080,720 });
 	fade_rect.setFillColor(sf::Color::Black);
 
@@ -105,46 +114,61 @@ void Menu::render(sf::RenderWindow& window) {
 		window.setMouseCursor(cursor);
 
 	}
-	if (left_clicked) {
-		sf::Vector2i position = pos;
-
-		sf::Vector2f mouse_posf = static_cast<sf::Vector2f>(position);
-		mouse_posf=window.mapPixelToCoords(position);
-		if (clickCheck(mouse_posf, start_text.getGlobalBounds())) {
 
 
-			rect_anim(start_text);
+}
+
+void Menu::handleEvent(const sf::Event& event, sf::RenderWindow& window)
+{
+
+	if (const auto* mouse =
+		event.getIf<sf::Event::MouseButtonPressed>())
+	{
+		if (mouse->button == sf::Mouse::Button::Left)
+		{
+			const sf::Vector2f mousePos =
+				window.mapPixelToCoords(mouse->position);
+
+			if (clickCheck(mousePos, start_text.getGlobalBounds()))
+			{
+				rect_anim(start_text);
 			start_option_clicked = true;
-
-			left_clicked = false;
+			}
 		}
 	}
 
-	
-	sf::Vector2i position = hover_mouse;
+	if (const auto* mouse = event.getIf<sf::Event::MouseMoved>()) {
 
-	sf::Vector2f mouse_posf = static_cast<sf::Vector2f>(position);
-	mouse_posf = window.mapPixelToCoords(position);
-	if (clickCheck(mouse_posf, start_text.getGlobalBounds())) {
+		sf::Vector2i position = mouse->position;
+
+		sf::Vector2f mouse_posf = static_cast<sf::Vector2f>(position);
+		mouse_posf = window.mapPixelToCoords(position);
+		if (clickCheck(mouse_posf, start_text.getGlobalBounds())) {
 
 
-		hand = true;
+			hand = true;
 
+		}
+		else {
+			hand = false;
+		}
 	}
-	else {
-		hand = false;
-	}
-
-	
-
 }
 
 void Menu::rect_anim(sf::Text& text)
 {
-	rect.setSize({ text.getGlobalBounds().size });
-	rect.setOrigin(rect.getGlobalBounds().getCenter());
-	rect.setRotation(sf::degrees(180));
-	rect.setPosition({ text.getPosition() });
+	sf::FloatRect bounds = text.getGlobalBounds();
+
+	// Match the text's size
+	rect.setSize(bounds.size);
+
+	// Centre the rectangle around the text
+	rect.setOrigin(rect.getSize() * 0.5f);
+
+	// Match the text's centre position
+	rect.setPosition(bounds.position + bounds.size * 0.5f);
+
+	rect.setRotation(sf::degrees(180.f));
 	rect.setFillColor(sf::Color::Red);
 
 }

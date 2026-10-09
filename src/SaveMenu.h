@@ -15,6 +15,7 @@ public:
 
 	void render(sf::RenderWindow& window) override;
 	void update(float dt) override;
+	void handleEvent(const sf::Event& event, sf::RenderWindow& window) override;
 	bool enter() override;
 	char exit() override;
 
@@ -31,7 +32,7 @@ private:
 	bool enter_check = false;
 	bool hand = false;
 	float bar_percent = 0.0f;
-	float speed = 10.0f;
+	float speed = 20.0f;
 	sf::Vector2i pos;
 	bool left_clicked = false;
 	bool back_option_clicked = false;

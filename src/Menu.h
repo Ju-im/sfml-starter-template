@@ -14,6 +14,7 @@ public:
 	void keyReleased(const sf::Event::KeyReleased* event) override;
 	void mouseMoved(const sf::Event::MouseMoved* event) override;
 	void render(sf::RenderWindow& window) override;
+	void handleEvent(const sf::Event& event, sf::RenderWindow& window) override;
 	void rect_anim(sf::Text& text);
 	void update(float dt) override;
 	char exit() override;

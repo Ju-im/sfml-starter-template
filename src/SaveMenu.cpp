@@ -22,10 +22,7 @@ void SaveMenu::mouseButtonPressed(const sf::Event::MouseButtonPressed* event)
 
 
 	if (event->button == sf::Mouse::Button::Left) {
-		pos = position;
-
-
-		left_clicked = true;
+		
 	}
 }
 
@@ -63,38 +60,9 @@ void SaveMenu::render(sf::RenderWindow& window)
 
 	}
 
-	if (left_clicked) {
-		sf::Vector2i position = pos;
-
-		sf::Vector2f mouse_posf = static_cast<sf::Vector2f>(position);
-		mouse_posf = window.mapPixelToCoords(position);
-		if (clickCheck(mouse_posf, back.getGlobalBounds())) {
-
-
-			rect_anim(back);
-			back_option_clicked = true;
-
-			left_clicked = false;
-		}
-	}
-	sf::Vector2i position = hover_mouse;
-
-	sf::Vector2f mouse_posf = static_cast<sf::Vector2f>(position);
-	mouse_posf = window.mapPixelToCoords(position);
-	if (clickCheck(mouse_posf, back.getGlobalBounds())) {
-
-
-		hand = true;
-
-	}
-	else {
-		hand = false;
-	}
 	window.draw(rect);
 	window.draw(back);
 	window.draw(title);
-	
-	
 	window.draw(fade_rect);
 }
 
@@ -102,11 +70,18 @@ void SaveMenu::render(sf::RenderWindow& window)
 
 void SaveMenu::rect_anim(sf::Text& text)
 {
-	std::cout << "Rect anim in save menu" << std::endl;
-	rect.setSize({ text.getGlobalBounds().size });
-	rect.setOrigin(rect.getGlobalBounds().getCenter());
-	rect.setRotation(sf::degrees(180));
-	rect.setPosition({ text.getPosition() });
+	sf::FloatRect bounds = text.getGlobalBounds();
+
+	// Match the text's size
+	rect.setSize(bounds.size);
+
+	// Centre the rectangle around the text
+	rect.setOrigin(rect.getSize() * 0.5f);
+
+	// Match the text's centre position
+	rect.setPosition(bounds.position + bounds.size * 0.5f);
+
+	rect.setRotation(sf::degrees(180.f));
 	rect.setFillColor(sf::Color::Red);
 
 }
@@ -129,15 +104,64 @@ void SaveMenu::update(float dt)
 
 		bar_percent += dt * speed;
 		fade_timer += dt * speed * 10;
-		bar_percent = std::clamp(bar_percent, 0.0f, 1.0f);
-		std::cout << "Rect height: " << rect.getSize().y << std::endl;
+		bar_percent = std::clamp(bar_percent, 0.1f, 1.0f);
 		rect.setSize({ rect.getSize().x, back.getGlobalBounds().size.y * bar_percent });
-		if (bar_percent >= 0.9f) {
+		if (bar_percent >= 0.9f && fade_timer >= 230.f) {
 			exit_check = true;
-			
+			fade_timer = .5f;
+			bar_percent = 0.0f;
+		}
+
+
+		fade_rect.setFillColor(sf::Color(0, 0, 0, fade_timer));
+		if (fade_timer >= 230.f) {
+			fade_rect.setFillColor(sf::Color(0, 0, 0, 255));
+			fade_timer = 1.f;
+			exit_check = true;
+		}
+
+	}
+}
+
+void SaveMenu::handleEvent(
+	const sf::Event& event,
+	sf::RenderWindow& window)
+{
+	if (const auto* mouse =
+		event.getIf<sf::Event::MouseButtonPressed>())
+	{
+		if (mouse->button == sf::Mouse::Button::Left)
+		{
+			const sf::Vector2f mousePos =
+				window.mapPixelToCoords(mouse->position);
+
+			if (clickCheck(mousePos, back.getGlobalBounds()))
+			{
+				rect_anim(back);
+				back_option_clicked = true;
+			}
+		}
+	}
+
+	if (const auto* mouse = event.getIf<sf::Event::MouseMoved>()) {
+
+		sf::Vector2i position = mouse->position;
+
+		sf::Vector2f mouse_posf = static_cast<sf::Vector2f>(position);
+		mouse_posf = window.mapPixelToCoords(position);
+		if (clickCheck(mouse_posf, back.getGlobalBounds())) {
+
+
+			hand = true;
+
+		}
+		else {
+			hand = false;
 		}
 	}
 }
+
+
 
 bool SaveMenu::enter()
 {
@@ -146,7 +170,7 @@ bool SaveMenu::enter()
 	back_option_clicked = false;
 
 	back.setString("BACK");
-	//back.setOrigin(back.getGlobalBounds().getCenter());
+	
 	float offset = back.getPosition().x - back.getGlobalBounds().getCenter().x;
 	back.setPosition({ window_size.x * 0.5f + offset, window_size.y * 0.75f });
 	back.setFillColor(sf::Color::White);
