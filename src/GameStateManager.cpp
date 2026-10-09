@@ -27,7 +27,10 @@ void GameStateManager::mouseButtonReleased(const sf::Event::MouseButtonReleased*
 
 
 void GameStateManager::keyPressed(const sf::Event::KeyPressed* event) {
-
+	if (event->scancode == sf::Keyboard::Scancode::S)
+	{
+		switchState(*play);
+	}
 	current_state->keyPressed(event);
 }
 void GameStateManager::keyReleased(const sf::Event::KeyReleased* event) {
@@ -40,6 +43,14 @@ void GameStateManager::mouseMoved(const sf::Event::MouseMoved* event) {
 }
 
 void GameStateManager::switchState(GameState& newstate) {
+	if (dynamic_cast<Play*>(current_state)) {
+		std::cout << "We were in Play now switching to Menu" << std::endl;
+		current_state = menu;
 
-	current_state;
+	}
+	else {
+		current_state = play;
+	}
+
+	
 }

@@ -2,12 +2,14 @@
 #include <SFML/Graphics.hpp>
 #include "GameState.h"
 #include "Play.h"
+#include "Menu.h"
 class GameStateManager
 {
 public:
 	GameStateManager();
 	~GameStateManager();
 	Play* play = new Play;
+	Menu* menu = new Menu;
 	GameState* current_state;
 	bool init();
 	void switchState(GameState& newstate);
