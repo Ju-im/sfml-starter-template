@@ -1,7 +1,7 @@
 #include "GameStateManager.h"
 GameStateManager::GameStateManager() {
 
-
+	menu->init();
 }
 
 
@@ -11,9 +11,10 @@ GameStateManager::~GameStateManager() {
 }
 
 bool GameStateManager::init() {
-	current_state = menu;
+	current_state = play;
+	current_state->enter();
 	
-	current_state->init();
+	
 	return true;
 }
 void GameStateManager::mouseButtonPressed(const sf::Event::MouseButtonPressed* event) {

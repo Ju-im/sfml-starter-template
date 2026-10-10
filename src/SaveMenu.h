@@ -7,7 +7,7 @@ public:
 	~SaveMenu();
 	bool init() override;
 	void mouseButtonPressed(const sf::Event::MouseButtonPressed* event) override;
-	void rect_anim(sf::Text & text);
+	void rect_anim(sf::Text & text,sf::RectangleShape& rect);
 	void mouseButtonReleased(const sf::Event::MouseButtonReleased* event) override;
 	void keyPressed(const sf::Event::KeyPressed* event) override;
 	void keyReleased(const sf::Event::KeyReleased* event) override;
@@ -28,14 +28,19 @@ private:
 	sf::Text time{ text_font };
 	sf::RectangleShape fade_rect;
 	sf::RectangleShape rect;
+	sf::RectangleShape save_box;
+	sf::Text save_text{ text_font };
 	float fade_timer = 0.5f;
 	bool enter_check = false;
+
 	bool hand = false;
 	float bar_percent = 0.0f;
-	float speed = 20.0f;
+	float speed = 20.0f
+		;
 	sf::Vector2i pos;
-	bool left_clicked = false;
+
 	bool back_option_clicked = false;
+	bool play_option_clicked = false;
 	sf::Vector2i hover_mouse;
 
 	bool exit_check = false;

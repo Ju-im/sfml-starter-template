@@ -63,12 +63,15 @@ void SaveMenu::render(sf::RenderWindow& window)
 	window.draw(rect);
 	window.draw(back);
 	window.draw(title);
+	window.draw(save_box);
+	window.draw(save_text);
+
 	window.draw(fade_rect);
 }
 
 
 
-void SaveMenu::rect_anim(sf::Text& text)
+void SaveMenu::rect_anim(sf::Text& text,sf::RectangleShape& rect)
 {
 	sf::FloatRect bounds = text.getGlobalBounds();
 
@@ -121,6 +124,28 @@ void SaveMenu::update(float dt)
 		}
 
 	}
+
+	if (play_option_clicked) {
+		
+		bar_percent += dt * speed;
+		fade_timer += dt * speed * 10;
+		bar_percent = std::clamp(bar_percent, 0.1f, 1.0f);
+		rect.setSize({ rect.getSize().x, save_text.getGlobalBounds().size.y * bar_percent });
+		if (bar_percent >= 0.9f && fade_timer >= 230.f) {
+			exit_check = true;
+			fade_timer = .5f;
+			bar_percent = 0.0f;
+		}
+
+
+		fade_rect.setFillColor(sf::Color(0, 0, 0, fade_timer));
+		if (fade_timer >= 230.f) {
+			fade_rect.setFillColor(sf::Color(0, 0, 0, 255));
+			fade_timer = 1.f;
+			exit_check = true;
+		}
+
+	}
 }
 
 void SaveMenu::handleEvent(
@@ -137,8 +162,14 @@ void SaveMenu::handleEvent(
 
 			if (clickCheck(mousePos, back.getGlobalBounds()))
 			{
-				rect_anim(back);
+				rect_anim(back,rect);
 				back_option_clicked = true;
+			}
+
+			if (clickCheck(mousePos, save_text.getGlobalBounds()))
+			{
+				rect_anim(save_text, rect);
+				play_option_clicked = true;
 			}
 		}
 	}
@@ -150,6 +181,12 @@ void SaveMenu::handleEvent(
 		sf::Vector2f mouse_posf = static_cast<sf::Vector2f>(position);
 		mouse_posf = window.mapPixelToCoords(position);
 		if (clickCheck(mouse_posf, back.getGlobalBounds())) {
+
+
+			hand = true;
+
+		}
+		else if (clickCheck(mouse_posf, save_text.getGlobalBounds())) {
 
 
 			hand = true;
@@ -176,7 +213,14 @@ bool SaveMenu::enter()
 	back.setFillColor(sf::Color::White);
 	back.setStyle(sf::Text::Underlined);
 
+	save_text.setString("New");
+	save_text.setPosition({ window_size.x * 0.2f , window_size.y * 0.2f });
 
+	rect_anim(save_text, save_box);
+	save_box.setScale({ 1.2f,1.2f });
+	save_box.setFillColor(sf::Color::Transparent);
+	save_box.setOutlineColor(sf::Color::White);
+	save_box.setOutlineThickness(2.0f);
 
 	fade_rect.setSize({ 1080,720 });
 	fade_rect.setFillColor(sf::Color::Black);
@@ -200,13 +244,21 @@ bool SaveMenu::enter()
 char SaveMenu::exit()
 {
 
-	if (exit_check) {
+	if (exit_check && back_option_clicked) {
 		exit_check = false;
 		rect.setSize({ 0.f,0.f });
 		fade_timer = 1.f;
 		bar_percent = 0.0f;
 		back_option_clicked = false;
 		return static_cast<char>(StateCode::Menu);
+	}
+	else if (exit_check && play_option_clicked) {
+		exit_check = false;
+		rect.setSize({ 0.f,0.f });
+		fade_timer = 1.f;
+		bar_percent = 0.0f;
+		play_option_clicked = false;
+		return static_cast<char>(StateCode::Play);
 	}
 	return 'n';
 }
