@@ -18,11 +18,14 @@ sf::Sprite* Animal::getSprite() {
 bool Animal::init(sf::RectangleShape& tab, sf::RectangleShape& view) {
 	passport = new Passport();
 	passport->init(tab, view);
+	passport->getSprite()->setPosition(start_pos);
 	animals[0].loadFromFile("../Data/Images/Critter Crossing/elephant.png");
 	animals[1].loadFromFile("../Data/Images/Critter Crossing/moose.png");
 	animals[2].loadFromFile("../Data/Images/Critter Crossing/penguin.png");
 	sprite = new sf::Sprite(animals[1]);
-	
+	end_color = sprite->getColor();
+	sprite->setColor(sf::Color::Black);
+	start_color = sprite->getColor();
 	return true;
 }
 
@@ -32,6 +35,8 @@ void Animal::update(float dt) {
 	if (!finished) {
 		walk_anim(dt);
 	}
+	
+
 }
 
 
@@ -40,27 +45,35 @@ void Animal::render(sf::RenderWindow& window) {
 	window.draw(*sprite);
 
 }
-void Animal::givePassport() {
-
-	float t = walk_timer / duration;
+void Animal::givePassport(float dt) {
+	if (give_timer >= give_duration) {
+		give_anim_finished = true;
+		finished = true;
+		
+		return;
+	}
+	give_timer += dt;
+	float t = give_timer / give_duration;
 	t = std::clamp(t, 0.0f, 1.0f);
-
+	
 	float easedT = easeInSine(t);
+	sf::Vector2f e = { sprite->getPosition().x,sprite->getPosition().y + 100.f };
+	sf::Vector2f position = getSprite()->getPosition() + (e - getSprite()->getPosition()) * easedT;
 
-	sf::Vector2f position = start_pos + (final_pos - start_pos) * easedT;
-
-	sprite->setPosition(position);
+	passport->movePassport(position);
+	//passport->rotatePassport(45.f);
 }
 void Animal::walk_anim(float dt) {
 	
 
 	if (walk_timer >= duration) {
-		finished = true;
+		
+		colorAnim(dt);
 		return;
 	}
 	walk_timer += dt ;
 
-	sprite->setPosition({ ( final_pos.x* easeOutBounce(walk_timer)),(final_pos.y * easeOutBounce(walk_timer)) });
+
 	
 	float t = walk_timer / duration;
 	t = std::clamp(t, 0.0f, 1.0f);
@@ -70,8 +83,23 @@ void Animal::walk_anim(float dt) {
 	sf::Vector2f position = start_pos + (final_pos - start_pos) * easedT;
 	
 	sprite->setPosition(position);
-	
-	
+
+
+}
+
+void Animal::colorAnim(float dt) {
+	if (color_timer >= color_duration) {
+		color_anim_finished = true;
+		givePassport(dt);
+		return;
+	}
+	color_timer += dt;
+	float t = color_timer / color_duration;
+	t = std::clamp(t, 0.0f, 1.0f);
+	uint8_t red = start_color.r + (end_color.r - start_color.r) * easeInSine(t);
+	uint8_t green = start_color.g + (end_color.g - start_color.g) * easeInSine(t);
+	uint8_t blue = start_color.b + (end_color.b - start_color.b) * easeInSine(t);
+	sprite->setColor(sf::Color(red, green, blue));
 
 }
 float Animal::easeInSine(float x) {

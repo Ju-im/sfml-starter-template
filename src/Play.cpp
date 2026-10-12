@@ -31,9 +31,11 @@ void Play::update(float dt) {
 			enter_check = false;
 			drop_timer = 0.f;
 		}
+		return;
 	}
+	
 	//passport.update(dt);
-	animal.update(dt);
+	animal->update(dt);
 
 }
 
@@ -41,15 +43,29 @@ void Play::render(sf::RenderWindow& window) {
 	//std::cout << "Currently in Play render" << std::endl;
 	window.draw(background);
 	
-	window.draw(view_area);
-	window.draw(checking_room);
-	animal.render(window);
-	window.draw(table);
-	window.draw(util_section);
-	animal.passport->render(window);
+	
+	if (enter_check) {
+		window.draw(view_area);
+		window.draw(checking_room);
+		window.draw(table);
+		window.draw(util_section);
+		window.draw(drop_rect);
+		return;
+	}
+	else {
+		window.draw(view_area);
+		window.draw(checking_room);
+		animal->render(window);
+		window.draw(table);
+		window.draw(util_section);
+		animal->passport->render(window);
+	}
+	
+	
+	
 	//passport.render(window);
 	
-	window.draw(drop_rect);
+	
 	
 	
 	if (hand) {
@@ -120,10 +136,10 @@ void Play::handleEvent(const sf::Event& event, sf::RenderWindow& window) {
 			const sf::Vector2f mousePos =
 				window.mapPixelToCoords(mouse->position);
 
-			if (clickCheck(mousePos, animal.passport->getSprite()->getGlobalBounds()))
+			if (clickCheck(mousePos, animal->passport->getSprite()->getGlobalBounds()))
 			{
-				drag_offset = mousePos - animal.passport->getSprite()->getPosition();
-				dragged = animal.passport->getSprite();
+				drag_offset = mousePos - animal->passport->getSprite()->getPosition();
+				dragged = animal->passport->getSprite();
 			}
 
 		}
@@ -145,17 +161,18 @@ void Play::dragSprite(sf::Sprite* sprite , sf::RenderWindow& window) {
 
 		sf::Vector2f drag_pos = mousePos - drag_offset;
 		sprite->setPosition({ drag_pos.x,drag_pos.y });
-		animal.passport->movePassport({ drag_pos.x,drag_pos.y });
+		animal->passport->movePassport({ drag_pos.x,drag_pos.y });
 	}
 
 }
 void Play::newAnimal()
 {
-	animal.init(table,view_area);
-	final_pos.x = checking_room.getSize().x * 0.5f - animal.getSprite()->getGlobalBounds().size.x *0.5f;
-	animal.final_pos = final_pos;
-	//animal.getSprite()->setPosition(final_pos);
-	animal.getSprite()->setPosition({ -300,500 });
+	animal = new Animal();
+	animal->init(table,view_area);
+	final_pos.x = checking_room.getSize().x * 0.5f - animal->getSprite()->getGlobalBounds().size.x *0.5f;
+	animal->final_pos = final_pos;
+	//animal->getSprite()->setPosition(final_pos);
+	animal->getSprite()->setPosition({ -300,500 });
 }
 bool Play::enter() {
 	fade_rect.setSize({ 1080,720 });
@@ -187,9 +204,10 @@ bool Play::enter() {
 		util_section.setSize({ window_size.x * 0.35f,window_size.y * 0.25f });
 		util_section.setPosition({ 0.f,window_size.y * 0.85f });
 		util_section.setFillColor(sf::Color(60, 43, 30));
-		newAnimal();
+		
 		//passport.init(table,view_area);
 	}
+	newAnimal();
 	fade_timer = 1.f;
 	enter_check = true;
 	exit_check = false;

@@ -38,13 +38,15 @@ public:
 	sf::RectangleShape table;
 	sf::RectangleShape util_section;
 
+	sf::RectangleShape stamp_holder_shadow;
+	sf::RectangleShape stamp_holder;
 	sf::Sprite* dragged = nullptr;
 	
 
 	sf::Vector2f drag_offset;
 
 	//Passport passport;
-	Animal animal;
+	Animal* animal;
 
 
 	float fade_timer = 1.f;

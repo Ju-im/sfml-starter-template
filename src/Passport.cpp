@@ -77,6 +77,12 @@ void Passport::movePassport(sf::Vector2f newPos) {
 	photo->setPosition({ sprite->getPosition().x + (sprite->getGlobalBounds().size.x * 0.09f), sprite->getPosition().y + (sprite->getGlobalBounds().size.y * 0.65f) });
 }
 
+void Passport::rotatePassport(float degrees) {
+
+	sprite->setRotation(sf::degrees(degrees));
+	photo->setRotation(sf::degrees(degrees));
+}
+
 void Passport::tableSize() {
 
 	sprite->setScale({ sprite->getScale().x *0.3f ,sprite->getScale().y * 0.3f});

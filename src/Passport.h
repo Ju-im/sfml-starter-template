@@ -10,6 +10,7 @@ public:
 	bool init(sf::RectangleShape& tab, sf::RectangleShape& view);
 	sf::Sprite* getSprite();
 	void movePassport(sf::Vector2f newPos);
+	void rotatePassport(float degrees);
 	void tableSize();
 	void viewSize();
 	void render(sf::RenderWindow& window);
