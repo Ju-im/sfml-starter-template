@@ -1,15 +1,19 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <iostream>
 class Passport
 {
 public:
 	Passport();
 	~Passport();
 
-	bool init();
+	bool init(sf::RectangleShape& tab, sf::RectangleShape& view);
 	sf::Sprite* getSprite();
 	void movePassport(sf::Vector2f newPos);
+	void tableSize();
+	void viewSize();
 	void render(sf::RenderWindow& window);
+	void update(float dt);
 
 private:
 	sf::Texture texture{ "../Data/Images/Critter Crossing/default passport.png" };
@@ -21,7 +25,8 @@ private:
 	sf::Texture reject_button_texture{ "../Data/Images/Critter Crossing/reject button.png" };
 	sf::Texture reject{ "../Data/Images/Critter Crossing/reject.png" };
 
-
+	sf::RectangleShape table;
+	sf::RectangleShape view_area;
 
 
 	sf::Sprite reject_button{ reject_button_texture };
@@ -32,6 +37,8 @@ private:
 	sf::Text issue_title{ font };
 	sf::Text exp_title{ font };
 	sf::Sprite* sprite;
+
+
 	int z_layer = 0;
 
 

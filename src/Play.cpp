@@ -32,7 +32,7 @@ void Play::update(float dt) {
 			drop_timer = 0.f;
 		}
 	}
-
+	passport.update(dt);
 }
 float Play::easeOutBounce(float x)
 {
@@ -58,6 +58,8 @@ void Play::render(sf::RenderWindow& window) {
 	
 	window.draw(view_area);
 	window.draw(checking_room);
+	window.draw(table);
+	window.draw(util_section);
 	passport.render(window);
 	
 	window.draw(drop_rect);
@@ -173,15 +175,27 @@ bool Play::enter() {
 	drop_rect.setFillColor(sf::Color::Black);
 	drop_rect.setPosition({ 0.f,0.f });
 	background.setTexture(backgroundTexture);
+
+
 	
 	if (!created_before) {
-		passport.init();
+		
 		
 		created_before = true;
 
 		checking_room.setSize({ window_size.x * 0.35f,window_size.y * 0.85f });
 		checking_room.setPosition({ 0.f, window_size.y * 0.30f });
 		checking_room.setFillColor(sf::Color(47, 38, 37));
+
+		table.setSize({ window_size.x * 0.35f,window_size.y * 0.25f });
+		table.setPosition({ 0.f,window_size.y * 0.6f });
+		table.setFillColor(sf::Color(133, 138, 110));
+
+		util_section.setSize({ window_size.x * 0.35f,window_size.y * 0.25f });
+		util_section.setPosition({ 0.f,window_size.y * 0.85f });
+		util_section.setFillColor(sf::Color(60, 43, 30));
+
+		passport.init(table,view_area);
 	}
 	fade_timer = 1.f;
 	enter_check = true;
