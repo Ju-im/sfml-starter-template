@@ -1,6 +1,7 @@
 #pragma once
 #include "GameState.h"
 #include "Passport.h"
+#include "Animal.h"
 class Play:public GameState
 {
 public:
@@ -17,8 +18,9 @@ public:
 	void handleEvent(const sf::Event& event, sf::RenderWindow& window)override;
 	void render(sf::RenderWindow& window) override;
 	void update(float dt) override;
-	float easeOutBounce(float x);
+	
 	void dragSprite(sf::Sprite* sprite, sf::RenderWindow& window);
+	void newAnimal();
 	bool enter() override;
 	char exit() override;
 	
@@ -32,6 +34,7 @@ public:
 
 	sf::RectangleShape view_area;
 	sf::RectangleShape checking_room;
+	sf::Vector2f final_pos{ 100,270 };
 	sf::RectangleShape table;
 	sf::RectangleShape util_section;
 
@@ -40,7 +43,8 @@ public:
 
 	sf::Vector2f drag_offset;
 
-	Passport passport;
+	//Passport passport;
+	Animal animal;
 
 
 	float fade_timer = 1.f;

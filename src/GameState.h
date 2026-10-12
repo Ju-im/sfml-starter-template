@@ -26,6 +26,7 @@ public:
 	virtual void update(float dt);
 	virtual char exit();
 	virtual bool enter();
+	virtual float easeOutBounce(float x);
 	sf::Vector2f window_size{ 1080,720 };
 	
 	
