@@ -22,11 +22,12 @@ bool Passport::init(sf::RectangleShape& tab, sf::RectangleShape& view) {
 	animals[0].loadFromFile("../Data/Images/Critter Crossing/elephant.png");
 	animals[1].loadFromFile("../Data/Images/Critter Crossing/moose.png");
 	animals[2].loadFromFile("../Data/Images/Critter Crossing/penguin.png");
-	sprite->setPosition({ 500.f,500.f });
+	sprite->setColor(sf::Color::Transparent);
+
 	photo = new sf::Sprite(animals[0]);
 	photo->setScale({ 0.3f,0.3f });
 	photo->setPosition({ sprite->getPosition().x + (sprite->getGlobalBounds().size.x * 0.09f), sprite->getPosition().y + (sprite->getGlobalBounds().size.y * 0.65f) });
-	
+	photo->setColor(sf::Color::Transparent);
 	table.setPosition(tab.getPosition());
 	table.setSize(tab.getSize());
 

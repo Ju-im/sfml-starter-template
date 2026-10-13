@@ -15,13 +15,14 @@ public:
 	void viewSize();
 	void render(sf::RenderWindow& window);
 	void update(float dt);
+	sf::Sprite* photo;
 
 private:
 	sf::Texture texture{ "../Data/Images/Critter Crossing/default passport.png" };
 	sf::Font font{ "../Data/Fonts/OpenSans-Bold.ttf" };
 	sf::Font text_font{ "../Data/Fonts/open-sans/OpenSans-LightItalic.ttf" };
 	sf::Texture* animals = new sf::Texture[3];
-	sf::Sprite* photo;
+	
 
 	sf::Texture reject_button_texture{ "../Data/Images/Critter Crossing/reject button.png" };
 	sf::Texture reject{ "../Data/Images/Critter Crossing/reject.png" };

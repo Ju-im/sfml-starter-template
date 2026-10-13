@@ -12,6 +12,7 @@ public:
 
    
     static sf::Vector2f rotateVec(sf::Vector2f& v, float deg);
+   static bool AABB(const sf::FloatRect sprite1, const sf::FloatRect sprite2);
     static char
         overlap(const sf::FloatRect& sprite1, const sf::FloatRect& sprite2);
     static sf::Vector2f

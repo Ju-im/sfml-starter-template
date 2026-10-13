@@ -2,6 +2,7 @@
 #include "GameState.h"
 #include "Passport.h"
 #include "Animal.h"
+#include "Utility.h"
 class Play:public GameState
 {
 public:
@@ -18,7 +19,9 @@ public:
 	void handleEvent(const sf::Event& event, sf::RenderWindow& window)override;
 	void render(sf::RenderWindow& window) override;
 	void update(float dt) override;
-	
+	void setupStamp();
+	void updateStamp(float dt);
+	void handleStampClick(sf::Vector2f mousePos);
 	void dragSprite(sf::Sprite* sprite, sf::RenderWindow& window);
 	void newAnimal();
 	bool enter() override;
@@ -43,12 +46,32 @@ public:
 	sf::Sprite* dragged = nullptr;
 	
 
+	sf::RectangleShape reject_mark;
+
+	// Stamp animation
+	sf::Vector2f stamp_start_pos;
+	sf::Vector2f stamp_target_pos;
+	sf::Vector2f stamp_home_pos;
+	float y_offset = 50.f;
+	float stamp_timer = 0.f;
+	float stamp_duration = 0.45f;
+
+	bool stamp_moving = false;
+	bool stamp_returning = false;
+	bool can_stamp = false;
+	bool stamped = false;
+
+	// Mouse interaction
+	bool hovering_stamp = false;
+
 	sf::Vector2f drag_offset;
 
 	//Passport passport;
 	Animal* animal;
+	const sf::Cursor cursor = sf::Cursor::createFromSystem(sf::Cursor::Type::Hand).value();
+	const sf::Cursor arrow = sf::Cursor::createFromSystem(sf::Cursor::Type::Arrow).value();
 
-
+	bool stamp_extended = false;
 	float fade_timer = 1.f;
 	float drop_timer = 0.f;
 	bool enter_check = false;

@@ -30,6 +30,17 @@ sf::Vector2f Utility::rotateVec(sf::Vector2f& newNormal, float deg)
 }
 
 
+bool Utility::AABB(const sf::FloatRect sprite1, const sf::FloatRect sprite2)
+{
+    sf::FloatRect box1 = sprite1;
+    sf::FloatRect box2 = sprite2;
+
+    return (
+        box1.position.x < box2.position.x + box2.size.x && box1.position.x+ box1.size.x > box2.position.x &&
+        box1.position.y < box2.position.y + box2.size.y && box1.position.x + box1.size.y > box2.position.y);
+}
+
+
 
 
 
