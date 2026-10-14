@@ -37,12 +37,14 @@ void Play::update(float dt) {
 	
 	animal->update(dt);
 	updateStamp(dt);
+	updateAcceptStamp(dt);
+	nextWave(dt);
 
 
 }
 
 void Play::render(sf::RenderWindow& window) {
-	//std::cout << "Currently in Play render" << std::endl;
+	
 	window.draw(background);
 	
 	
@@ -55,17 +57,25 @@ void Play::render(sf::RenderWindow& window) {
 		return;
 	}
 	else {
-		window.draw(view_area);
+		
+		window.draw(next_wave_circle);
 		window.draw(checking_room);
 		animal->render(window);
+		window.draw(view_area);
 		window.draw(table);
 		window.draw(util_section);
 		animal->passport->render(window);
+		for (auto& p : queue) {
+			window.draw(p);
+		}
+
 		if (animal->result.stamped) {
 			window.draw(*animal->result.sprite);
 		}
-		
-		window.draw(reject_mark);
+
+		window.draw(accept_stamp_shadow);
+		window.draw(accept_stamp_holder);
+
 		window.draw(stamp_holder_shadow);
 		window.draw(stamp_holder);
 	}
@@ -169,6 +179,47 @@ void Play::handleEvent(
 				
 			}
 		}
+
+		if (mouse->button == sf::Mouse::Button::Left)
+		{
+			const sf::Vector2f mousePos =
+				window.mapPixelToCoords(mouse->position);
+
+			if (next_wave_circle.getGlobalBounds().contains(mousePos) ) {
+				done = true;
+			}
+
+
+
+			// Handle stamp interaction first.
+			if (accept_stamp_holder.getGlobalBounds().contains(mousePos))
+			{
+
+				handleAcceptStampClick(mousePos);
+				return;
+			}
+
+
+			// Don't drag the passport while the stamp is moving.
+			if (accept_stamp_moving)
+				return;
+
+			if (clickCheck(
+				mousePos,
+				animal->passport->getSprite()->getGlobalBounds()))
+			{
+				// Only allow dragging if the stamp isn't covering
+				// the passport for an active stamping action.
+
+				drag_offset = mousePos -
+					animal->passport->getSprite()->getPosition();
+
+				dragged = animal->passport->getSprite();
+
+
+			}
+		}
+
 	}
 
 	// Handle stamp interaction first.
@@ -182,12 +233,20 @@ void Play::handleEvent(
 			hand = true;
 			
 		}
+		
+
+		else if (accept_stamp_holder.getGlobalBounds().contains(mousePos))
+		{
+
+			hand = true;
+
+		}
 		else {
 			hand = false;
 		}
 	}
 	
-
+	
 	dragSprite(dragged, window);
 }
 
@@ -216,8 +275,38 @@ void Play::newAnimal()
 	animal->init(table,view_area);
 	final_pos.x = checking_room.getSize().x * 0.5f - animal->getSprite()->getGlobalBounds().size.x *0.5f;
 	animal->final_pos = final_pos;
-	//animal->getSprite()->setPosition(final_pos);
+	animal->accept_start_pos = final_pos;
+	animal->accept_final_pos = final_pos + sf::Vector2f(400.f, 50.f);
 	animal->getSprite()->setPosition({ -300,500 });
+	done = false;
+
+}
+void Play::nextWave(float dt)
+{
+	if (animal->done && !done) {
+		
+		if (flash_timer >= flash_duration) {
+			timer += dt;
+			next_wave_circle.setFillColor(sf::Color::White);
+			if (timer >= duration) {
+				flash_timer = 0.f;
+				timer = 0.f;
+			}
+		}
+		else {
+			flash_timer += dt;
+			next_wave_circle.setFillColor(sf::Color(141, 141, 141));
+
+
+		}
+
+
+	}
+	if (animal->done && done) {
+		newAnimal();
+	}
+	
+
 }
 bool Play::enter() {
 	fade_rect.setSize({ 1080,720 });
@@ -231,13 +320,22 @@ bool Play::enter() {
 	drop_rect.setPosition({ 0.f,0.f });
 	background.setTexture(backgroundTexture);
 
-
+	animals[0].loadFromFile("../Data/Images/Critter Crossing/elephant.png");
+	animals[1].loadFromFile("../Data/Images/Critter Crossing/moose.png");
+	animals[2].loadFromFile("../Data/Images/Critter Crossing/penguin.png");
 	
 	if (!created_before) {
 		
 		
 		created_before = true;
-
+		for (int i = 0; i < waves; i++) {
+			
+			sf::Sprite critter(animals[2]);
+			critter.setPosition({ i * critter.getGlobalBounds().size.x * 0.5f, 0.f });
+			critter.setColor(sf::Color(10, 10, 10));
+			critter.setScale({ 0.5f,0.5f });
+			queue.push_back(critter);
+		}
 		checking_room.setSize({ window_size.x * 0.35f,window_size.y * 0.85f });
 		checking_room.setPosition({ 0.f, window_size.y * 0.30f });
 		checking_room.setFillColor(sf::Color(47, 38, 37));
@@ -250,8 +348,18 @@ bool Play::enter() {
 		util_section.setPosition({ 0.f,window_size.y * 0.85f });
 		util_section.setFillColor(sf::Color(60, 43, 30));
 		
+
+		
+
+		next_wave_circle.setFillColor(sf::Color(141, 141, 141));
+		next_wave_circle.setRadius(50.f);
+		next_wave_circle.setPosition({ window_size.x * 0.8f,window_size.y * 0.10f });
+		
+
+
+
 		setupStamp();
-		//passport.init(table,view_area);
+		
 	}
 	newAnimal();
 	fade_timer = 1.f;
@@ -274,6 +382,22 @@ char Play::exit() {
 
 void Play::setupStamp()
 {
+
+	accept_stamp_holder.setTexture(&accept_button_texture);
+	accept_stamp_holder.setSize({ 400.f, 80.f });
+
+	accept_stamp_shadow.setSize({ 400.f, 80.f });
+	accept_stamp_shadow.setFillColor(
+		sf::Color(0, 0, 0, 80)
+	);
+
+	accept_home_pos = { window_size.x * 0.9f, 300.f };
+	accept_stamp_holder.setPosition(accept_home_pos);
+
+	accept_stamp_shadow.setPosition(accept_home_pos + sf::Vector2f(0.f, y_offset));
+
+	
+
 	stamp_holder.setTexture(&reject_button_texture);
 	stamp_holder.setSize({ 400.f, 80.f });
 
@@ -283,7 +407,7 @@ void Play::setupStamp()
 	);
 
 	// Original position on the desk.
-	stamp_home_pos = { window_size.x*0.9f, 400.f };
+	stamp_home_pos = { window_size.x*0.9f, 600.f };
 
 	stamp_holder.setPosition(stamp_home_pos);
 
@@ -292,11 +416,8 @@ void Play::setupStamp()
 		stamp_home_pos + sf::Vector2f(0.f, y_offset)
 	);
 
-	// The visible imprint left on the passport.
-	reject_mark.setTexture(&reject);
-	reject_mark.setSize({ 45.f, 45.f });
-	reject_mark.setFillColor(sf::Color::White);
-	reject_mark.setPosition({ -100.f, -100.f });
+	
+	
 }
 
 
@@ -383,7 +504,87 @@ void Play::updateStamp(float dt)
 
 
 
+void Play::updateAcceptStamp(float dt) {
 
+	if (!accept_stamp_moving)
+		return;
+
+	accept_stamp_timer += dt;
+
+	float t = std::clamp(
+		accept_stamp_timer / stamp_duration,
+		0.f,
+		1.f
+	);
+
+	float easedT = easeOutBounce(t);
+
+	sf::Vector2f position =
+		accept_home_pos +
+		(accept_target_pos  - accept_home_pos) * easedT;
+
+	accept_stamp_holder.setPosition(position);
+
+	accept_stamp_shadow.setPosition({
+		position.x,
+		position.y + y_offset
+		});
+
+	if (t >= 1.f)
+	{
+		accept_stamp_holder.setPosition(accept_target_pos);
+
+		accept_stamp_moving = false;
+		accept_stamp_timer = 0.f;
+
+		if (accept_stamp_returning)
+		{
+			// The holder has finished returning home.
+			accept_stamp_returning = false;
+			accept_can_stamp = false;
+			accept_stamped = false;
+			return;
+		}
+
+		// The holder has reached the passport.
+		if (Utility::AABB(
+			accept_stamp_holder.getGlobalBounds(),
+			animal->passport->getSprite()->getGlobalBounds()))
+		{
+			std::cout << "Stamping passport" << std::endl;
+			if (!animal->result.stamped) {
+				animal->result.sprite->setTexture(accept);
+				animal->result.sprite->setPosition(
+					accept_stamp_holder.getPosition()
+				);
+
+				animal->result.stamped = true;
+				animal->result.passed = true;
+
+
+
+				animal->result.offset =
+					accept_stamp_holder.getPosition() -
+					animal->passport->getSprite()->getPosition();
+
+				accept_stamped = true;
+			}
+			else {
+				//
+
+			}
+			
+		}
+		else
+		{
+			std::cout << "Missed passport" << std::endl;
+
+			accept_stamped = false;
+		}
+
+		
+	}
+}
 
 
 
@@ -418,4 +619,37 @@ void Play::handleStampClick(sf::Vector2f mousePos)
 
 	stamp_timer = 0.f;
 	stamp_moving = true;
+}
+
+
+void Play::handleAcceptStampClick(sf::Vector2f mousePos)
+{
+	if (accept_stamp_moving)
+		return;
+
+	if (!accept_stamp_holder.getGlobalBounds().contains(mousePos))
+		return;
+
+	accept_stamp_start_pos = stamp_holder.getPosition();
+
+	if (!accept_stamp_extended)
+	{
+		// Extend the holder.
+		accept_target_pos = {
+			accept_home_pos.x - 300.f,
+			accept_home_pos.y
+		};
+
+		accept_stamp_extended = true;
+	}
+	else
+	{
+		// Retract the holder.
+		accept_target_pos = accept_home_pos;
+		accept_stamp_extended = false;
+		accept_can_stamp = false;
+	}
+
+	accept_stamp_timer = 0.f;
+	accept_stamp_moving = true;
 }

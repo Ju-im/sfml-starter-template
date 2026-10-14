@@ -15,6 +15,8 @@ sf::Sprite* Animal::getSprite() {
 	return sprite;
 }
 
+
+
 bool Animal::init(sf::RectangleShape& tab, sf::RectangleShape& view) {
 	passport = new Passport();
 	passport->init(tab, view);
@@ -27,9 +29,9 @@ bool Animal::init(sf::RectangleShape& tab, sf::RectangleShape& view) {
 	sprite->setColor(sf::Color::Black);
 	start_color = sprite->getColor();
 	result.sprite  = new sf::Sprite(reject);
+	result.sprite->setScale({ 1.5f,1.5f });
 	return true;
 }
-
 void Animal::update(float dt) {
 
 	passport->update(dt);
@@ -37,7 +39,8 @@ void Animal::update(float dt) {
 	if (!finished) {
 		walk_anim(dt);
 	}
-	if (result.stamped && !reject_walk_finished&&!being_dragged) {
+	
+	if (result.stamped && !reject_walk_finished&&!being_dragged && !result.passed) {
 		if (passport->getSprite()->getGlobalBounds().findIntersection(sprite->getGlobalBounds())) {
 			takePassport(dt);
 		}
@@ -48,11 +51,20 @@ void Animal::update(float dt) {
 		
 		
 	}
+
+	if (result.stamped && !accept_walk_finished && !being_dragged && result.passed) {
+		if (passport->getSprite()->getGlobalBounds().findIntersection(sprite->getGlobalBounds())) {
+			takePassport(dt);
+		}
+		colorBlackAnim(dt);
+		acceptWalk(dt);
+	}
 	sf::Vector2f diff = passport->getSprite()->getPosition();
 	sf::Vector2f drag_pos = (diff + result.offset);
 	result.sprite->setPosition({ drag_pos.x,drag_pos.y });
 
 }
+
 
 
 void Animal::render(sf::RenderWindow& window) {
@@ -61,7 +73,6 @@ void Animal::render(sf::RenderWindow& window) {
 	
 
 }
-
 void Animal::takePassport(float dt) {
 	
 	
@@ -83,20 +94,25 @@ void Animal::takePassport(float dt) {
 	passport->getSprite()->setColor(sf::Color::White);
 	passport->photo->setColor(sf::Color::White);
 	take_timer += dt;
+
 	float t = take_timer / take_duration;
+
 	t = std::clamp(t, 0.0f, 1.0f);
 
 	float easedT = easeInSine(t);
-	sf::Vector2f e = { sprite->getPosition().x,sprite->getPosition().y - 100.f };
+	sf::Vector2f e = { sprite->getPosition().x,sprite->getPosition().y - 20.f };
 	sf::Vector2f position = getSprite()->getPosition() + (e - getSprite()->getPosition()) * easedT;
 
 	passport->movePassport(position);
+
 }
+
+
+
 void Animal::givePassport(float dt) {
 
 	if (give_timer >= give_duration) {
 		give_anim_finished = true;
-		finished = true;
 		
 		return;
 	}
@@ -137,6 +153,8 @@ void Animal::walk_anim(float dt) {
 
 
 }
+
+
 void Animal::rejectWalk(float dt) {
 	if (!color_black_anim_finished) {
 		return;
@@ -148,6 +166,7 @@ void Animal::rejectWalk(float dt) {
 	if (reject_walk_timer >= reject_walk_duration) {
 		
 		reject_walk_finished = true;
+		done = true;
 		return;
 	}
 	
@@ -164,6 +183,41 @@ void Animal::rejectWalk(float dt) {
 
 	sprite->setPosition(position);
 }
+void Animal::acceptWalk(float dt) {
+
+	if (!color_black_anim_finished) {
+		return;
+	}
+	if (accept_walk_finished) {
+		std::cout << "Finished" << std::endl;
+		return;
+	}
+	if (accept_walk_timer >= accept_walk_duration) {
+
+		accept_walk_finished = true;
+		done = true;
+		return;
+	}
+
+	accept_walk_timer += dt;
+
+
+
+
+
+	float t = accept_walk_timer / accept_walk_duration;
+	t = std::clamp(t, 0.0f, 1.0f);
+
+	float easedT = easeOutBack(t);
+
+	sf::Vector2f position = accept_start_pos + (accept_final_pos - accept_start_pos) * easedT;
+
+	sprite->setPosition(position);
+
+}
+
+
+
 void Animal::colorBlackAnim(float dt)
 {
 	if (!take_anim_finished) {
@@ -202,6 +256,8 @@ void Animal::colorAnim(float dt) {
 	sprite->setColor(sf::Color(red, green, blue));
 
 }
+
+
 float Animal::easeInSine(float x) {
   return 1 - cos((x * pi / 2));
 }
@@ -230,3 +286,4 @@ float Animal::easeOutBounce(float x)
 		return n1 * (x -= 2.625 / d1) * x + 0.984375;
 	}
 }
+

@@ -23,11 +23,13 @@ public:
 	float easeInSine(float x);
 	float easeOutBack(float x);
 	void rejectWalk(float dt);
+	void acceptWalk(float dt);
 	void colorBlackAnim(float dt);
 
 	sf::Vector2f final_pos;
 	sf::Vector2f start_pos{ -300,400 };
-
+	sf::Vector2f accept_final_pos;
+	sf::Vector2f accept_start_pos;
 	struct Result {
 		sf::Sprite* sprite;
 		sf::Vector2f offset;
@@ -38,6 +40,7 @@ public:
 	
 	Passport* passport;
 	bool being_dragged = false;
+	bool done = false;
 private:
 	sf::Texture* animals = new sf::Texture[3];
 	sf::Sprite* sprite;
@@ -45,12 +48,16 @@ private:
 	
 	bool  finished = false;
 	float walk_timer = 0.0f;
-	float duration = 2.5f;
-
+	float duration = 1.5f;
+	
 	bool  reject_walk_finished = false;
 	float reject_walk_timer = 0.0f;
 	float reject_walk_duration = 5.5f;
 
+	bool  accept_walk_finished = false;
+	float accept_walk_timer = 0.0f;
+	float accept_walk_duration = 2.5f;
+	
 	sf::Color end_color;
 	sf::Color start_color;
 
@@ -61,7 +68,7 @@ private:
 	bool give_anim_finished = false;
 
 	float take_timer = 0.0f;
-	float take_duration = 3.f;
+	float take_duration = 2.f;
 	bool take_anim_finished = false;
 	
 	float color_timer = 0.0f;
@@ -69,7 +76,7 @@ private:
 	bool color_anim_finished = false;
 
 	float color_black_timer = 0.0f;
-	float color_black_duration = 3.f;
+	float color_black_duration = 1.5f;
 	bool color_black_anim_finished = false;
 	const double pi = acos(-1.0);
 	
