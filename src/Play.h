@@ -71,7 +71,7 @@ public:
 	};
 
 	std::vector<queue_animal> list_animals;
-	bool moveLine(queue_animal ani,float dt);
+	bool moveLine(queue_animal& ani,float dt);
 	bool offScreenXList(queue_animal& animal_in_queue);
 	queue_animal q;
 	sf::Texture* animals = new sf::Texture[3];

@@ -316,10 +316,13 @@ void Play::nextWave(float dt)
 	}
 	
 	
-	moveLine(list_animals.front(), dt);
+	
 	if (animal->done && done) {
 		next_wave_circle.setFillColor(sf::Color(141, 141, 141));
-		newAnimal();
+		if (moveLine(list_animals.front(), dt)) {
+			newAnimal();
+		}
+		
 		
 	}
 	
@@ -691,8 +694,11 @@ void Play::moveAnimalLine(sf::Sprite& sprite, float dt) {
 	//queue.erase(new_end, queue.end());
 	
 }
-bool Play::moveLine(queue_animal ani, float dt)
+bool Play::moveLine(queue_animal& ani, float dt)
 {
+	if (list_animals.size() == 0) {
+		return false;
+	}
 	ani.sprite->move({ -20.f * dt,0.f });
 	bool r = offScreenXList(ani);
 
