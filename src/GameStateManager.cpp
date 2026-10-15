@@ -11,7 +11,7 @@ GameStateManager::~GameStateManager() {
 }
 
 bool GameStateManager::init() {
-	current_state = menu;
+	current_state = play;
 	current_state->enter();
 	
 	

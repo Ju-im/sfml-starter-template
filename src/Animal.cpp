@@ -179,7 +179,7 @@ void Animal::rejectWalk(float dt) {
 
 	float easedT = easeOutBack(t);
 
-	sf::Vector2f position = final_pos + ((start_pos- sf::Vector2f{700.f,-700.f}) - final_pos)* easedT;
+	sf::Vector2f position = final_pos + ((start_pos- sf::Vector2f{300.f,-300.f}) - final_pos)* easedT;
 
 	sprite->setPosition(position);
 }

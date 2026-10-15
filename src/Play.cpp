@@ -39,6 +39,7 @@ void Play::update(float dt) {
 	updateStamp(dt);
 	updateAcceptStamp(dt);
 	nextWave(dt);
+	bobQueue(dt);
 
 
 }
@@ -65,8 +66,8 @@ void Play::render(sf::RenderWindow& window) {
 		window.draw(table);
 		window.draw(util_section);
 		animal->passport->render(window);
-		for (auto& p : queue) {
-			window.draw(p);
+		for (auto& p : list_animals) {
+			window.draw(*p.sprite);
 		}
 
 		if (animal->result.stamped) {
@@ -120,7 +121,7 @@ void Play::mouseButtonReleased(const sf::Event::MouseButtonReleased* event) {
 void Play::keyPressed(const sf::Event::KeyPressed* event) {
 	if (event->scancode == sf::Keyboard::Scancode::W)
 	{
-		exit_check = true;
+		//exit_check = true;
 	}
 	
 
@@ -138,6 +139,17 @@ void Play::mouseMoved(const sf::Event::MouseMoved* event) {
 	sf::Vector2i position = event->position;
 }
 
+void Play::bobQueue(float dt) {
+	t = clock.getElapsedTime().asSeconds();
+
+	
+	for (int i = 0; i<list_animals.size();i++) {
+		float s = std::sin(5 * t + i);
+
+		list_animals[i].sprite->move({0.f,s*0.5f});
+	}
+
+}
 
 void Play::handleEvent(
 	const sf::Event& event,
@@ -185,7 +197,7 @@ void Play::handleEvent(
 			const sf::Vector2f mousePos =
 				window.mapPixelToCoords(mouse->position);
 
-			if (next_wave_circle.getGlobalBounds().contains(mousePos) ) {
+			if (next_wave_circle.getGlobalBounds().contains(mousePos) && animal->done ) {
 				done = true;
 			}
 
@@ -279,7 +291,7 @@ void Play::newAnimal()
 	animal->accept_final_pos = final_pos + sf::Vector2f(400.f, 50.f);
 	animal->getSprite()->setPosition({ -300,500 });
 	done = false;
-
+	animal->done = false;
 }
 void Play::nextWave(float dt)
 {
@@ -302,12 +314,20 @@ void Play::nextWave(float dt)
 
 
 	}
+	
+	
+	moveLine(list_animals.front(), dt);
 	if (animal->done && done) {
+		next_wave_circle.setFillColor(sf::Color(141, 141, 141));
 		newAnimal();
+		
 	}
 	
 
 }
+
+
+
 bool Play::enter() {
 	fade_rect.setSize({ 1080,720 });
 	fade_rect.setFillColor(sf::Color::Black);
@@ -324,18 +344,28 @@ bool Play::enter() {
 	animals[1].loadFromFile("../Data/Images/Critter Crossing/moose.png");
 	animals[2].loadFromFile("../Data/Images/Critter Crossing/penguin.png");
 	
+	
 	if (!created_before) {
 		
 		
 		created_before = true;
 		for (int i = 0; i < waves; i++) {
 			
-			sf::Sprite critter(animals[2]);
+			/*sf::Sprite critter(animals[2]);
 			critter.setPosition({ i * critter.getGlobalBounds().size.x * 0.5f, 0.f });
 			critter.setColor(sf::Color(10, 10, 10));
 			critter.setScale({ 0.5f,0.5f });
-			queue.push_back(critter);
+			queue.push_back(critter);*/
+			queue_animal a = q;
+			a.sprite = new sf::Sprite(animals[2]);
+			a.sprite->setColor(sf::Color(10, 10, 10));
+			a.sprite->setScale({ 0.5f,0.5f });
+			a.sprite->setPosition({ i * a.sprite->getGlobalBounds().size.x * 0.5f, 0.f });
+			a.off_screen = false;
+			list_animals.push_back(a);
+			
 		}
+		std::cout << list_animals.size();
 		checking_room.setSize({ window_size.x * 0.35f,window_size.y * 0.85f });
 		checking_room.setPosition({ 0.f, window_size.y * 0.30f });
 		checking_room.setFillColor(sf::Color(47, 38, 37));
@@ -380,6 +410,7 @@ char Play::exit() {
 }
 
 
+
 void Play::setupStamp()
 {
 
@@ -419,8 +450,6 @@ void Play::setupStamp()
 	
 	
 }
-
-
 
 void Play::updateStamp(float dt)
 {
@@ -501,7 +530,6 @@ void Play::updateStamp(float dt)
 		stamp_returning = true;*/
 	}
 }
-
 
 
 void Play::updateAcceptStamp(float dt) {
@@ -588,7 +616,6 @@ void Play::updateAcceptStamp(float dt) {
 
 
 
-
 void Play::handleStampClick(sf::Vector2f mousePos)
 {
 	if (stamp_moving)
@@ -653,3 +680,50 @@ void Play::handleAcceptStampClick(sf::Vector2f mousePos)
 	accept_stamp_timer = 0.f;
 	accept_stamp_moving = true;
 }
+
+
+void Play::moveAnimalLine(sf::Sprite& sprite, float dt) {
+
+	sprite.move({ -10.f * dt,0.f });
+	bool r = offScreenX(sprite.getGlobalBounds());
+
+	//auto const new_end = std::remove_if(queue.begin(), queue.end(), sprite.);
+	//queue.erase(new_end, queue.end());
+	
+}
+bool Play::moveLine(queue_animal ani, float dt)
+{
+	ani.sprite->move({ -20.f * dt,0.f });
+	bool r = offScreenXList(ani);
+
+	auto new_end = std::remove_if(list_animals.begin(), list_animals.end(), [](const queue_animal& l) { return l.off_screen; });
+	list_animals.erase(new_end, list_animals.end());
+	std::cout << "New size is: " << list_animals.size() << std::endl;
+	std::cout << r << std::endl;
+	return r;
+
+}
+bool Play::offScreenXList(queue_animal& animal_in_queue)
+{
+	
+		if (animal_in_queue.sprite->getGlobalBounds().position.x + animal_in_queue.sprite->getGlobalBounds().size.x < 0.f) {
+			animal_in_queue.off_screen = true;
+			return true;
+		}
+		else {
+			animal_in_queue.off_screen = false;
+			return false;
+		}
+	
+}
+bool Play::offScreenX(sf::FloatRect box) {
+	
+
+	if (box.position.x + box.size.x <= 0.f) {
+		
+		return true;
+	}
+	else { return false; }
+	
+}
+

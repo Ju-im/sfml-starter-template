@@ -52,11 +52,11 @@ private:
 	
 	bool  reject_walk_finished = false;
 	float reject_walk_timer = 0.0f;
-	float reject_walk_duration = 5.5f;
+	float reject_walk_duration = 1.5f;
 
 	bool  accept_walk_finished = false;
 	float accept_walk_timer = 0.0f;
-	float accept_walk_duration = 2.5f;
+	float accept_walk_duration = 1.5f;
 	
 	sf::Color end_color;
 	sf::Color start_color;
